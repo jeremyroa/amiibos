@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {ScrollView, View, StyleSheet} from 'react-native';
-import {Title, useTheme} from 'react-native-paper';
+import {Title, useTheme, ActivityIndicator} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 import _ from 'lodash';
@@ -15,6 +15,7 @@ const Home = () => {
   const {getAmiibosForType, getInitialState} = useAmiibos();
   const theme = useTheme();
   const [currentPag, setCurrentPag] = useState(1);
+  const [loading, setLoading] = useState(true);
   const {amiibos, types} = useSelector(
     state => ({
       amiibos: _.chunk(Object.values(state.amiibos), 10),
@@ -29,39 +30,50 @@ const Home = () => {
   const moreAmiibos = () =>
     currentPag < amiibos.length ? setCurrentPag(currentPag + 1) : null;
 
-  const changeSelect = value => {
-    if (getAmiibosForType(value) !== null) {
+  const changeSelect = async value => {
+    value && setLoading(true);
+    if ((await getAmiibosForType(value)) !== null) {
       setCurrentPag(1);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    getInitialState();
+    const fetch = async () => {
+      await getInitialState();
+      setLoading(false);
+    };
+    fetch();
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <>
-      <ScrollView style={{backgroundColor: theme.colors.background}}>
-        <View style={styles.containerSelect}>
-          <Title>Select an Amiibo Type</Title>
-          {types.length > 0 && (
-            <View
-              style={[
-                styles.borderSelect,
-                {borderColor: theme.colors.backdrop},
-              ]}>
-              <RNPickerSelect
-                onValueChange={changeSelect}
-                placeholder={{}}
-                items={types}
-              />
-            </View>
-          )}
-        </View>
+      <ScrollView
+        style={{backgroundColor: theme.colors.background}}
+        contentContainerStyle={{flexGrow: 1}}>
+        {!!amiibos.length && (
+          <View style={styles.containerSelect}>
+            <Title>Select an Amiibo Type</Title>
+            {types.length > 0 && (
+              <View
+                style={[
+                  styles.borderSelect,
+                  {borderColor: theme.colors.backdrop},
+                ]}>
+                <RNPickerSelect
+                  onValueChange={changeSelect}
+                  placeholder={{}}
+                  items={types}
+                />
+              </View>
+            )}
+          </View>
+        )}
 
         {amiibos.length > 0 &&
+          !loading &&
           _.take(amiibos, currentPag)
             .flat()
             .map(({head, tail, amiiboSeries, name, type, image, price}) => (
@@ -76,8 +88,20 @@ const Home = () => {
               />
             ))}
 
+        {loading && (
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              height: '100%',
+            }}>
+            <ActivityIndicator />
+          </View>
+        )}
+
         <View style={styles.containerMoreButton}>
-          {currentPag < amiibos.length && (
+          {currentPag < amiibos.length && !loading && (
             <IconButton
               icon="plus"
               color={theme.colors.primary}
@@ -90,7 +114,7 @@ const Home = () => {
             />
           )}
 
-          {currentPag >= amiibos.length && <Text>End Results</Text>}
+          {currentPag >= amiibos.length && !loading && <Text>End Results</Text>}
         </View>
       </ScrollView>
       <Cart />
@@ -100,16 +124,6 @@ const Home = () => {
 
 const styles = StyleSheet.create({
   containerSelect: {paddingHorizontal: 15, paddingTop: 15},
-  inputAndroid: {
-    // fontSize: 16,
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderWidth: 0.5,
-    borderColor: 'purple',
-    borderRadius: 8,
-    color: 'black',
-    paddingRight: 30, // to ensure the text is never behind the icon
-  },
   borderSelect: {
     borderWidth: 1,
     borderRadius: 4,

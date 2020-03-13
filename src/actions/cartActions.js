@@ -7,6 +7,7 @@ import {
   REDEEM_CART,
 } from './types';
 import _ from 'lodash';
+import Alert from '../components/Alert';
 
 export const addToCart = (id, quantity) => (dispatch, getState) =>
   dispatch({
@@ -55,7 +56,10 @@ export const deleteItem = id => (dispatch, getState) => {
   });
 };
 
-export const redeemCart = () => ({
-  type: REDEEM_CART,
-  payload: {},
-});
+export const redeemCart = () => {
+  Alert('Success', 'You have new Amiibos');
+  return {
+    type: REDEEM_CART,
+    payload: {},
+  };
+};

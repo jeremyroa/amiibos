@@ -5,6 +5,7 @@ import Animated from 'react-native-reanimated';
 import {useTheme, Title, IconButton, Button} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import ItemCart from './ItemCart';
 import useCart from '../hooks/useCart';
 
@@ -47,9 +48,10 @@ const Cart = () => {
     set(prevTrans, trans),
     untraversedPos,
   ]);
-  const {cart, total} = useSelector(
+  const {cart, total, amiibosLength} = useSelector(
     state => ({
       cart: Object.values(state.cart),
+      amiibosLength: isEmpty(state.amiibos),
       total: Object.values(state.cart).reduce(
         (prev, value) => prev + value.quantity * value.price,
         0,
@@ -63,13 +65,15 @@ const Cart = () => {
       style={[styles.containerHeader, {backgroundColor: theme.colors.primary}]}>
       <View style={styles.innerHeader}>
         <IconButton
-          icon="arrow-up"
+          icon={total ? 'arrow-up' : 'sale'}
           color={theme.colors.background}
           size={26}
           disabled
         />
         <View style={styles.center}>
-          <Title style={[{color: theme.colors.background}]}>Your Cart</Title>
+          <Title style={[{color: theme.colors.background}]}>
+            {total ? `You have (${cart.length}) items selected` : 'Empty Cart'}
+          </Title>
         </View>
         <IconButton
           icon="cart"
@@ -122,7 +126,7 @@ const Cart = () => {
       )}
     </View>
   );
-  if (!total && bottomSheetRef.current) {
+  if (!total && bottomSheetRef.current && !amiibosLength) {
     bottomSheetRef.current.snapTo(0);
   }
   return (

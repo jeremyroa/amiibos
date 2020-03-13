@@ -4,6 +4,7 @@ import {FETCH_AMIIBOS, FETCH_AMIIBOS_TYPES} from './types';
 import amiibo from '../apis/amiibo';
 import {fetchTypes} from './typesActions';
 import {updateCart} from './cartActions';
+import Alert from '../components/Alert';
 
 export const fetchAmiibos = () => async dispatch => {
   try {
@@ -33,14 +34,17 @@ export const fetchAmiibosTypes = type => async dispatch => {
       })),
     });
     dispatch(updateCart());
-  } catch (error) {}
+  } catch (error) {
+    Alert('Error', 'An ocurred Expected');
+  }
 };
 
 export const fetchInitialState = type => async (dispatch, getState) => {
-  console.log(type);
   try {
     await dispatch(fetchTypes());
     const initialType = Object.keys(getState().types)[0];
-    dispatch(fetchAmiibosTypes(initialType));
-  } catch (error) {}
+    await dispatch(fetchAmiibosTypes(initialType));
+  } catch (error) {
+    Alert('Error', 'An ocurred Expected');
+  }
 };
