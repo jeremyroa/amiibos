@@ -9,6 +9,7 @@ import {
   useTheme,
 } from 'react-native-paper';
 import {View, StyleSheet} from 'react-native';
+import PropTypes from 'prop-types';
 
 import useCart from '../hooks/useCart';
 
@@ -76,6 +77,14 @@ const ItemCart = ({
 
 export default ItemCart;
 
+ItemCart.propTypes = {
+  image: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  price: PropTypes.isRequired,
+  quantity: PropTypes.isRequired,
+};
 const styles = StyleSheet.create({
   centerItems: {
     justifyContent: 'center',

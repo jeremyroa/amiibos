@@ -11,6 +11,7 @@ import {
 import {View, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
 import isEqual from 'lodash/isEqual';
+import PropTypes from 'prop-types';
 import useCart from '../hooks/useCart';
 
 const ItemAmiibo = ({
@@ -94,7 +95,12 @@ const ItemAmiibo = ({
     </>
   );
 };
-
+ItemAmiibo.propTypes = {
+  image: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+};
 export default ItemAmiibo;
 const styles = StyleSheet.create({
   centerItems: {
