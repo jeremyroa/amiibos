@@ -54,7 +54,7 @@ const ItemCart = ({
                 <Paragraph style={styles.bold}>{quantity}</Paragraph>
                 <IconButton
                   icon="plus-circle"
-                  color={Colors.red500}
+                  color={Colors.green500}
                   size={20}
                   onPress={() => sendMoreQuantity(id)}
                 />
