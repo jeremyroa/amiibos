@@ -52,7 +52,7 @@ const Home = () => {
     <>
       <ScrollView
         style={{backgroundColor: theme.colors.background}}
-        contentContainerStyle={{flexGrow: 1}}>
+        contentContainerStyle={styles.innerGrow}>
         {!!amiibos.length && (
           <View style={styles.containerSelect}>
             <Title>Select an Amiibo Type</Title>
@@ -89,13 +89,7 @@ const Home = () => {
             ))}
 
         {loading && (
-          <View
-            style={{
-              flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
-              height: '100%',
-            }}>
+          <View style={styles.containerLoading}>
             <ActivityIndicator />
           </View>
         )}
@@ -136,6 +130,12 @@ const styles = StyleSheet.create({
   borderMoreButton: {
     borderWidth: 2,
   },
+  containerLoading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerGrow: {flexGrow: 1},
 });
 
 export default Home;

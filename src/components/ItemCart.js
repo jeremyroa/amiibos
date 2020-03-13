@@ -82,8 +82,6 @@ ItemCart.propTypes = {
   name: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   id: PropTypes.string.isRequired,
-  price: PropTypes.isRequired,
-  quantity: PropTypes.isRequired,
 };
 const styles = StyleSheet.create({
   centerItems: {
