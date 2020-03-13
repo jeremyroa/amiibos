@@ -41,7 +41,6 @@ export const fetchInitialState = type => async (dispatch, getState) => {
   try {
     await dispatch(fetchTypes());
     const initialType = Object.keys(getState().types)[0];
-    console.log(initialType);
     dispatch(fetchAmiibosTypes(initialType));
   } catch (error) {}
 };

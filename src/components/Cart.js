@@ -1,18 +1,16 @@
 import React, {useRef} from 'react';
-import {StyleSheet, View, ScrollView} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import BottomSheet from 'reanimated-bottom-sheet';
 import Animated from 'react-native-reanimated';
-import {useTheme, Text, Title, IconButton} from 'react-native-paper';
+import {useTheme, Title, IconButton, Button} from 'react-native-paper';
 import {useSelector} from 'react-redux';
 import isEqual from 'lodash/isEqual';
-import _ from 'lodash';
 import ItemCart from './ItemCart';
+import useCart from '../hooks/useCart';
 
 const {block, set, greaterThan, lessThan, Value, cond, sub} = Animated;
 
 const CartList = ({cart}) => {
-  const theme = useTheme();
-
   return (
     <>
       {cart.map(
@@ -35,6 +33,8 @@ const CartList = ({cart}) => {
 
 const Cart = () => {
   const theme = useTheme();
+  const bottomSheetRef = useRef();
+  const {sendRedeemCart} = useCart();
   const trans = new Value(0);
   const untraversedPos = new Value(0);
   const prevTrans = new Value(0);
@@ -47,52 +47,35 @@ const Cart = () => {
     set(prevTrans, trans),
     untraversedPos,
   ]);
-  const {cart} = useSelector(
+  const {cart, total} = useSelector(
     state => ({
       cart: Object.values(state.cart),
+      total: Object.values(state.cart).reduce(
+        (prev, value) => prev + value.quantity * value.price,
+        0,
+      ),
     }),
     isEqual,
   );
 
   const renderHeader = () => (
     <View
-      style={{
-        width: '100%',
-        backgroundColor: theme.colors.primary,
-        height: 50,
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
-      }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-around',
-          alignItems: 'center',
-          height: '100%',
-        }}>
+      style={[styles.containerHeader, {backgroundColor: theme.colors.primary}]}>
+      <View style={styles.innerHeader}>
         <IconButton
           icon="arrow-up"
           color={theme.colors.background}
           size={26}
           disabled
-          onPress={() => console.log('Pressed')}
         />
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {/* <IconButton
-            icon="cart"
-            color={theme.colors.background}
-            size={26}
-            disabled
-            onPress={() => console.log('Pressed')}
-          /> */}
-          <Title style={{color: theme.colors.background}}>Your Cart</Title>
+        <View style={styles.center}>
+          <Title style={[{color: theme.colors.background}]}>Your Cart</Title>
         </View>
         <IconButton
           icon="cart"
           color={theme.colors.background}
           size={26}
           disabled
-          onPress={() => console.log('Pressed')}
         />
       </View>
     </View>
@@ -101,26 +84,54 @@ const Cart = () => {
   const renderInner = () => (
     <View>
       <Animated.View
-        style={{
-          zIndex: 1,
-          transform: [
-            {
-              translateY: headerPos,
-            },
-          ],
-        }}>
+        style={[
+          styles.upper,
+          {
+            transform: [
+              {
+                translateY: headerPos,
+              },
+            ],
+          },
+        ]}>
         {renderHeader()}
       </Animated.View>
-      {/* <View> */}
       <CartList cart={cart} />
-      {/* </View> */}
+      {!!total && (
+        <View
+          style={[
+            styles.containerRedeem,
+            {
+              backgroundColor: theme.colors.backgroundModal,
+            },
+          ]}>
+          <Title style={{color: theme.colors.primary}}>TOTAL: {total}$</Title>
+          <Button
+            icon="cash"
+            mode="outlined"
+            onPress={sendRedeemCart}
+            style={[
+              styles.borderWitdthButton,
+              {
+                borderColor: theme.colors.primary,
+              },
+            ]}>
+            Redeem
+          </Button>
+        </View>
+      )}
     </View>
   );
-
+  if (!total && bottomSheetRef.current) {
+    bottomSheetRef.current.snapTo(0);
+  }
   return (
     <BottomSheet
+      ref={bottomSheetRef}
       contentPosition={trans}
-      snapPoints={[50, 200]}
+      enabledGestureInteraction={!!total}
+      borderRadius={20}
+      snapPoints={[45, 200]}
       renderContent={renderInner}
     />
   );
@@ -128,15 +139,30 @@ const Cart = () => {
 
 export default Cart;
 
-const IMAGE_SIZE = 200;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: 'red',
+  containerHeader: {
+    width: '100%',
+    height: 45,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
   },
-  box: {
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
+  innerHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: '100%',
+  },
+  center: {flexDirection: 'row', alignItems: 'center'},
+  upper: {zIndex: 1},
+  containerRedeem: {
+    padding: 15,
+    paddingBottom: 5,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  borderWitdthButton: {
+    borderWidth: 1,
   },
 });

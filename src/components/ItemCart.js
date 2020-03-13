@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   List,
   Avatar,
@@ -8,9 +8,8 @@ import {
   Button,
   useTheme,
 } from 'react-native-paper';
-import {View} from 'react-native';
-import {useSelector} from 'react-redux';
-import isEqual from 'lodash/isEqual';
+import {View, StyleSheet} from 'react-native';
+
 import useCart from '../hooks/useCart';
 
 const ItemCart = ({
@@ -21,18 +20,8 @@ const ItemCart = ({
   price = '',
   quantity = '',
 }) => {
-  const {sendToCart} = useCart();
+  const {sendLessQuantity, sendMoreQuantity, sendDeleteItem} = useCart();
   const theme = useTheme();
-
-  // const {isInCart} = useSelector(
-  //   state => ({
-  //     isInCart: !!state.cart[id],
-  //   }),
-  //   isEqual,
-  // );
-  // const onClickMinusButton = () =>
-  //   setQuantity(quantity - 1 >= 0 ? quantity - 1 : 0);
-  // const onClickPlusButton = () => setQuantity(quantity + 1);
 
   return (
     <>
@@ -54,24 +43,19 @@ const ItemCart = ({
         right={() => (
           <>
             <View>
-              <View
-                style={{
-                  justifyContent: 'center',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}>
+              <View style={styles.centerItems}>
                 <IconButton
                   icon="minus-circle"
                   color={Colors.red500}
                   size={20}
-                  // onPress={onClickMinusButton}
+                  onPress={() => sendLessQuantity(id)}
                 />
-                <Paragraph style={{fontWeight: 'bold'}}>{quantity}</Paragraph>
+                <Paragraph style={styles.bold}>{quantity}</Paragraph>
                 <IconButton
                   icon="plus-circle"
                   color={Colors.red500}
                   size={20}
-                  // onPress={onClickPlusButton}
+                  onPress={() => sendMoreQuantity(id)}
                 />
               </View>
               <Button
@@ -79,7 +63,7 @@ const ItemCart = ({
                 mode="text"
                 color={theme.colors.notification}
                 disabled={quantity <= 0}
-                onPress={() => sendToCart(id, quantity)}>
+                onPress={() => sendDeleteItem(id)}>
                 Delete
               </Button>
             </View>
@@ -91,3 +75,12 @@ const ItemCart = ({
 };
 
 export default ItemCart;
+
+const styles = StyleSheet.create({
+  centerItems: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bold: {fontWeight: 'bold'},
+});

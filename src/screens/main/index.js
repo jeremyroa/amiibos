@@ -21,7 +21,7 @@ const MainStack = () => {
       <Stack.Screen
         name="Home"
         component={Home}
-        options={{title: 'Miibo Shopping'}}
+        options={{title: 'Amiibo Shopping'}}
       />
     </Stack.Navigator>
   );

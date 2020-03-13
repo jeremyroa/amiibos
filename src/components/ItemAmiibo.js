@@ -6,8 +6,9 @@ import {
   Colors,
   Paragraph,
   Button,
+  useTheme,
 } from 'react-native-paper';
-import {View} from 'react-native';
+import {View, StyleSheet} from 'react-native';
 import {useSelector} from 'react-redux';
 import isEqual from 'lodash/isEqual';
 import useCart from '../hooks/useCart';
@@ -20,8 +21,8 @@ const ItemAmiibo = ({
   price = '',
 }) => {
   const [quantity, setQuantity] = useState(0);
-  const {sendToCart} = useCart();
-
+  const {sendToCart, sendDeleteItem} = useCart();
+  const theme = useTheme();
   const {isInCart} = useSelector(
     state => ({
       isInCart: !!state.cart[id],
@@ -49,19 +50,14 @@ const ItemAmiibo = ({
           <>
             {!isInCart && (
               <View>
-                <View
-                  style={{
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                  }}>
+                <View style={styles.centerItems}>
                   <IconButton
                     icon="minus-circle"
                     color={Colors.red500}
                     size={20}
                     onPress={onClickMinusButton}
                   />
-                  <Paragraph style={{fontWeight: 'bold'}}>{quantity}</Paragraph>
+                  <Paragraph style={styles.bold}>{quantity}</Paragraph>
                   <IconButton
                     icon="plus-circle"
                     color={Colors.red500}
@@ -73,8 +69,22 @@ const ItemAmiibo = ({
                   icon="cart"
                   mode="text"
                   disabled={quantity <= 0}
-                  onPress={() => sendToCart(id, quantity)}>
+                  onPress={() => {
+                    sendToCart(id, quantity);
+                    setQuantity(0);
+                  }}>
                   Add
+                </Button>
+              </View>
+            )}
+            {isInCart && (
+              <View style={styles.centerItems}>
+                <Button
+                  icon="delete"
+                  mode="text"
+                  color={theme.colors.notification}
+                  onPress={() => sendDeleteItem(id)}>
+                  Delete in Cart
                 </Button>
               </View>
             )}
@@ -86,3 +96,11 @@ const ItemAmiibo = ({
 };
 
 export default ItemAmiibo;
+const styles = StyleSheet.create({
+  centerItems: {
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  bold: {fontWeight: 'bold'},
+});
