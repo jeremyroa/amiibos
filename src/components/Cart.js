@@ -41,8 +41,8 @@ const Cart = () => {
   const prevTrans = new Value(0);
   const headerPos = block([
     cond(
-      lessThan(untraversedPos, sub(trans, 50)),
-      set(untraversedPos, sub(trans, 50)),
+      lessThan(untraversedPos, sub(trans, 0)),
+      set(untraversedPos, sub(trans, 0)),
     ),
     cond(greaterThan(untraversedPos, trans), set(untraversedPos, trans)),
     set(prevTrans, trans),
