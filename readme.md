@@ -15,7 +15,7 @@ Requires [ADB]
 
 
 ```sh
-$ git clone url
+$ git clone https://github.com/jeremyroa/amiibos.git
 $ cd amiibos
 $ yarn install
 $ yarn start
